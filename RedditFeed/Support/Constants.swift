@@ -9,5 +9,6 @@
 import UIKit
 
 struct Constants {
-
+    static let apiBaseURL = "https://reddit.com/"
+    static let loadingBunchSize: Int = 2
 }
