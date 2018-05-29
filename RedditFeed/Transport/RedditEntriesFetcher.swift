@@ -31,18 +31,16 @@ class RedditEntriesFetcher: NSObject {
                 
                 return
             }
-            let JSON = String(data: response, encoding: .utf8)
-            print(JSON)
             
             // parse response into model objects
-//            do {
-//                let entries = try JSONDecoder().decode([String: RedditEntry].self, from: response)["data"]!["children"]
-//                return entries
-//            }
-//            catch let error {
-//                print(error)
-//                return
-//            }
+            do {
+                let responseObject = try JSONDecoder().decode([String: EntriesResponse].self, from: response)["data"]
+                print(responseObject as Any)
+            }
+            catch let error {
+                print(error)
+                return
+            }
         }
     }
 }

@@ -14,11 +14,39 @@ import UIKit
 //- A thumbnail for those who have a picture.
 //- Number of comments
 
-struct RedditEntry: Decodable {
-    let thingName: String
+struct RedditEntry {
+    let name: String
     let title: String
     let author: String
-    let date: String
+    let created: Double
     let thumbnailURL: URL?
     let numberOfComments: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case data
+    }
+    
+    enum RedditEntryDataKeys: String, CodingKey {
+        case name
+        case title
+        case author
+        case created
+        case thumbnailURL = "thumbnail"
+        case numberOfComments = "num_comments"
+    }
 }
+
+extension RedditEntry: Decodable {
+    init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        let additionalInfo = try values.nestedContainer(keyedBy: RedditEntryDataKeys.self, forKey: .data)
+        
+        name = try additionalInfo.decode(String.self, forKey: .name)
+        title = try additionalInfo.decode(String.self, forKey: .title)
+        author = try additionalInfo.decode(String.self, forKey: .author)
+        created = try additionalInfo.decode(Double.self, forKey: .created)
+        thumbnailURL = try additionalInfo.decode(URL.self, forKey: .thumbnailURL)
+        numberOfComments = try additionalInfo.decode(Int.self, forKey: .numberOfComments)
+    }
+}
+
