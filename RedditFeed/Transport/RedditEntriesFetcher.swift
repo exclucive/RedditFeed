@@ -13,34 +13,56 @@ import UIKit
 class RedditEntriesFetcher: NSObject {
     private static let fetchEntriesEndpoint = "/r/popular/top/.json"
 
-    class func fetchInitialEntries(completionHandler: @escaping (Error?, [RedditEntry]?) -> ()) {
-        let params = ["count": "0", "limit": "\(Constants.loadingBunchSize)"]
+    // MARK: Public methods
+    private class func parse(_ data: Data?, completionHandler: @escaping (Error?, [RedditEntry]?) -> ()) {
+        // unwrap optional response
+        guard let responseData = data else {
+            // TODO: Generate error
+            completionHandler(nil, nil)
+            
+            return
+        }
         
-        RedditNetworking.getRequest(RedditEntriesFetcher.fetchEntriesEndpoint, parameters: params) { (error, responseData) in
-            // Check for error
+        // parse response into model objects
+        do {
+            let response = try JSONDecoder().decode(EntriesResponse.self, from: responseData)
+            print(response.entries)
+        }
+        catch let error {
+            print(error)
+            return
+        }
+    }
+    
+    // MARK: Public methods
+    class func fetchInitialEntries(_ limit: Int, completionHandler: @escaping (Error?, [RedditEntry]?) -> ()) {
+        let initialFetchParams = ["count": "0",
+                                  "limit": "\(limit)"]
+        
+        RedditNetworking.getRequest(fetchEntriesEndpoint, parameters: initialFetchParams) { (error, data) in
             guard error == nil else {
                 completionHandler(error, nil)
-                
+                return
+            }
+
+            //
+            parse(data, completionHandler: completionHandler)
+        }
+    }
+    
+    class func fetchEntries(_ count: Int, limit: Int, after: String, completionHandler: @escaping (Error?, [RedditEntry]?) -> ()) {
+        let paginationLoadingFetchParams = ["count": "\(count)",
+                                            "limit": "\(limit)",
+                                            "after": after]
+        
+        RedditNetworking.getRequest(fetchEntriesEndpoint, parameters: paginationLoadingFetchParams) { (error, data) in
+            guard error == nil else {
+                completionHandler(error, nil)
                 return
             }
             
-            // unwrap optional response
-            guard let response = responseData else {
-                // TODO: Generate error
-                completionHandler(nil, nil)
-                
-                return
-            }
-            
-            // parse response into model objects
-            do {
-                let response = try JSONDecoder().decode(EntriesResponse.self, from: response)
-                print(response.entries)
-            }
-            catch let error {
-                print(error)
-                return
-            }
+            //
+            parse(data, completionHandler: completionHandler)
         }
     }
 }

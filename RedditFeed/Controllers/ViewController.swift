@@ -12,16 +12,13 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        RedditEntriesFetcher.fetchInitialEntries { (error, entries) in
+        RedditEntriesFetcher.fetchInitialEntries(2) { (_,_) in
             
         }
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
-
-
 }
 
