@@ -20,6 +20,7 @@ struct RedditEntry {
     let author: String
     let created: Double
     let thumbnailURL: URL?
+    let fullImageURL: URL?
     let numberOfComments: Int
 }
 
@@ -35,6 +36,7 @@ extension RedditEntry: Decodable {
         case author
         case created
         case thumbnailURL = "thumbnail"
+        case fullImageURL = "url"
         case numberOfComments = "num_comments"
     }
     
@@ -47,6 +49,7 @@ extension RedditEntry: Decodable {
         author = try additionalInfo.decode(String.self, forKey: .author)
         created = try additionalInfo.decode(Double.self, forKey: .created)
         thumbnailURL = try additionalInfo.decode(URL.self, forKey: .thumbnailURL)
+        fullImageURL = try additionalInfo.decode(URL.self, forKey: .fullImageURL)
         numberOfComments = try additionalInfo.decode(Int.self, forKey: .numberOfComments)
     }
 }
