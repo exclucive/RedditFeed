@@ -47,12 +47,10 @@ extension EntriesListViewController: UITableViewDataSource {
     private func configure(_ cell: RedditEntryTableViewCell, indexPath: IndexPath) {
         let entry = entries[indexPath.row]
         
-        //
-        if let url = entry.thumbnailURL {
-            cell.thumbnailImageView.setImage(withURL: url, placeholder: nil)
-        }
+        // image
+        cell.thumbnailImageView.setImage(withURL: entry.thumbnailURL, placeholder: nil)
         
-        //
+        // text labels
         cell.titleLabel.text = entry.title
         cell.timeLabel.text = "submitted \(Date.numberOfHoursUntilNow(timeStamp: entry.created)) hours ago"
         cell.authorLabel.text = entry.author
