@@ -48,7 +48,7 @@ extension EntriesListViewController: UITableViewDataSource {
         let entry = entries[indexPath.row]
         
         cell.titleLabel.text = entry.title
-        cell.timeLabel.text = "submitted 12 hours ago"
+        cell.timeLabel.text = "submitted \(Date.numberOfHoursUntilNow(timeStamp: entry.created)) hours ago"
         cell.authorLabel.text = entry.author
         cell.commentsLabel.text = "\(entry.numberOfComments) comments"
     }
