@@ -19,18 +19,16 @@ class RedditEntriesFetcher: NSObject {
         guard let responseData = data else {
             // TODO: Generate error
             completionHandler(nil, nil)
-            
             return
         }
         
         // parse response into model objects
         do {
             let response = try JSONDecoder().decode(EntriesResponse.self, from: responseData)
-            print(response.entries)
+            completionHandler(nil, response.entries)
         }
         catch let error {
-            print(error)
-            return
+            completionHandler(error, nil)
         }
     }
     
@@ -44,7 +42,7 @@ class RedditEntriesFetcher: NSObject {
                 completionHandler(error, nil)
                 return
             }
-
+            
             //
             parse(data, completionHandler: completionHandler)
         }

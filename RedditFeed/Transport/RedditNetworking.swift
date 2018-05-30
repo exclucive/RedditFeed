@@ -34,14 +34,19 @@ class RedditNetworking: NSObject {
     class func getRequest(_ endpoint: String,
                           parameters: [String: String],
                           completionHandler: @escaping (Error?, Data?) -> ()) {
+        
         guard let request = request(endpoint, parameters: parameters) else {
             // TODO: Generate error for this case
-            completionHandler(nil, nil)
+            DispatchQueue.main.async {
+                completionHandler(nil, nil)
+            }
             return
         }
         
         session().dataTask(with: request) { (data, response, error) in
-            completionHandler(error, data)
+            DispatchQueue.main.async {
+                completionHandler(error, data)
+            }
         }.resume()
     }
 }
