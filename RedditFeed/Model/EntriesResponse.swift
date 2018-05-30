@@ -8,15 +8,23 @@
 
 import UIKit
 
-struct EntriesResponse: Decodable {
+struct EntriesResponse {
     let entries: [RedditEntry]
-    
+}
+
+extension EntriesResponse: Decodable {
     enum CodingKeys: String, CodingKey {
+        case data
+    }
+    
+    enum EntriesResponseChildren: String, CodingKey {
         case entries = "children"
     }
     
     init(from decoder: Decoder) throws {
-        let keyedContainer = try decoder.container(keyedBy: CodingKeys.self)
-        entries = try [keyedContainer.decode(RedditEntry.self, forKey: .entries)]
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        let additionalInfo = try values.nestedContainer(keyedBy: EntriesResponseChildren.self, forKey: .data)
+        
+        entries = try additionalInfo.decode([RedditEntry].self, forKey: .entries)
     }
 }

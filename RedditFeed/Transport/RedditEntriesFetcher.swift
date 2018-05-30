@@ -34,8 +34,8 @@ class RedditEntriesFetcher: NSObject {
             
             // parse response into model objects
             do {
-                let responseObject = try JSONDecoder().decode([String: EntriesResponse].self, from: response)["data"]
-                print(responseObject as Any)
+                let response = try JSONDecoder().decode(EntriesResponse.self, from: response)
+                print(response.entries)
             }
             catch let error {
                 print(error)
