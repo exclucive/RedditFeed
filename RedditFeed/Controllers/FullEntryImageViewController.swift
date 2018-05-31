@@ -28,10 +28,17 @@ class FullEntryImageViewController: UIViewController {
     
     // MARK: Private
     func setupImage() {
-        activityIndicator.startAnimating()
-        imageDownloader.setImage(toImageView: imageView, withURL: imageURL, placeholder: UIImage(named: "placeholder")) {[unowned self] (success) in
-            self.saveButton.isEnabled = true
-            self.activityIndicator.stopAnimating()
+        if let url = imageURL, url.absoluteString.isImageType()  {
+            activityIndicator.startAnimating()
+            imageDownloader.setImage(toImageView: imageView,
+                                     withURL: imageURL,
+                                     placeholder: UIImage(named: "placeholder")) {[unowned self] (success) in
+                                        self.activityIndicator.stopAnimating()
+                                        self.saveButton.isEnabled = success
+            }
+        }
+        else {
+            imageView.image = UIImage(named: "placeholder")
         }
     }
     
