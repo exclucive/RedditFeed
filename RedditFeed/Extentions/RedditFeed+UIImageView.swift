@@ -68,13 +68,15 @@ extension UIImageView {
         image = placeholder
         
         if let url = url {
-            self.imageKey = url
+            imageKey = url
         
             downloadImage(withURL: url) { [unowned self] (success, image, responseUrl) in
                 if responseUrl == self.imageKey && success {
                     self.image = image
                 }
             }
+        } else {
+            imageKey = nil
         }
     }
 }
