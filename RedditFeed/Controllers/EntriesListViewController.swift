@@ -42,16 +42,20 @@ class EntriesListViewController: UIViewController {
         tableView.estimatedRowHeight = 85.0
         tableView.rowHeight = UITableViewAutomaticDimension
     }
+    
+    
 }
 
 extension EntriesListViewController: UITableViewDataSource {
     private func configure(_ cell: RedditEntryTableViewCell, indexPath: IndexPath) {
         let entry = entries[indexPath.row]
         
+        cell.delegate = self
+        
         // image
         imageDownloader.setImage(toImageView:cell.thumbnailImageView,
                                  withURL: entry.thumbnailURL,
-                                 placeholder: nil)
+                                 placeholder: UIImage(named: "placeholder"))
         
         // text labels
         cell.titleLabel.text = entry.title
@@ -74,3 +78,21 @@ extension EntriesListViewController: UITableViewDataSource {
         return cell
     }
 }
+
+extension EntriesListViewController: RedditEntryTableViewCellDelegate {
+    func didTapOnThumbnailImage(cell: RedditEntryTableViewCell) {
+        guard let indexPath = tableView.indexPath(for: cell) else {
+            return
+        }
+        let entry = entries[indexPath.row]
+        
+        let fullImageControllerIdentifier = String(describing: FullEntryImageViewController.self)
+        let fullImageController = storyboard?.instantiateViewController(withIdentifier: fullImageControllerIdentifier) as? FullEntryImageViewController
+        fullImageController?.imageURL = entry.fullImageURL
+        
+        if let controller = fullImageController {
+            navigationController?.pushViewController(controller, animated: true)
+        }
+    }
+}
+

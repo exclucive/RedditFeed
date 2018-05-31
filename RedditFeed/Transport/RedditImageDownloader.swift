@@ -32,14 +32,20 @@ class RedditImageDownloader: NSObject {
 
     // MARK: Public
     func setImage(toImageView imageView: UIImageView, withURL url: URL?, placeholder: UIImage?) {
+        setImage(toImageView: imageView, withURL: url, placeholder: placeholder, completion: nil)
+    }
+    
+    func setImage(toImageView imageView: UIImageView, withURL url: URL?, placeholder: UIImage?, completion: ((Bool) -> ())?) {
         guard let url = url else {
             imageView.imageKey = nil
             imageView.image = placeholder
+            completion?(false)
             return
         }
         
         if let existingImage = imageCache.object(forKey: url.absoluteString as NSString) as? UIImage {
             imageView.image = existingImage
+            completion?(true)
         }
         else {
             imageView.imageKey = url
@@ -47,6 +53,7 @@ class RedditImageDownloader: NSObject {
             
             downloadImage(withURL: url) { [unowned self] (success, image, responseUrl) in
                 guard let image = image, let url = responseUrl else {
+                    completion?(false)
                     return
                 }
                 
@@ -58,8 +65,10 @@ class RedditImageDownloader: NSObject {
                 if responseUrl == imageView.imageKey && success {
                     imageView.image = image
                 }
+                
+                completion?(success)
             }
         }
-
     }
+    
 }
