@@ -12,6 +12,7 @@ class EntriesListViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     
     private var entries = [RedditEntry]()
+    private let imageDownloader = RedditImageDownloader()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,7 +49,9 @@ extension EntriesListViewController: UITableViewDataSource {
         let entry = entries[indexPath.row]
         
         // image
-        cell.thumbnailImageView.setImage(withURL: entry.thumbnailURL, placeholder: nil)
+        imageDownloader.setImage(toImageView:cell.thumbnailImageView,
+                                 withURL: entry.thumbnailURL,
+                                 placeholder: nil)
         
         // text labels
         cell.titleLabel.text = entry.title
