@@ -17,8 +17,8 @@ class RedditEntriesFetcher: NSObject {
     private class func parse(_ data: Data?, completionHandler: @escaping (Error?, [RedditEntry]?) -> ()) {
         // unwrap optional response
         guard let responseData = data else {
-            // TODO: Generate error
-            completionHandler(nil, nil)
+            let error = RFError(errorType: RFNetworkingError.entriesFetchingError)
+            completionHandler(error, nil)
             return
         }
         

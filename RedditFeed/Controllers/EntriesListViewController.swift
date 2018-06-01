@@ -12,7 +12,7 @@ class EntriesListViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
     let estimatedRowHeight:CGFloat = 85.0
     let maxCapacity:Int = 50
-    let pageSize:Int = 5 
+    let pageSize:Int = 5
     
     private var entries = [RedditEntry]()
     private var isLoadingInProgress = false
@@ -42,7 +42,9 @@ class EntriesListViewController: UIViewController {
                 self.isLoadingInProgress = false
                 
                 guard error == nil else {
-                    // TODO: Show error alert
+                    let errorAlertController = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert)
+                    self.present(errorAlertController, animated: true, completion: nil)
+
                     return
                 }
                 
@@ -50,15 +52,10 @@ class EntriesListViewController: UIViewController {
                     return
                 }
                 
-                print("new entries: \(newEntries.count)")
-                print("existing entries: \(self.entries.count)")
-                
                 self.entries += newEntries
                 self.tableView.reloadData()
             })
         }
-        
-
     }
     
     private func configrueTableView() {

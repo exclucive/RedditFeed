@@ -36,10 +36,11 @@ class RedditNetworking: NSObject {
                           completionHandler: @escaping (Error?, Data?) -> ()) {
         
         guard let request = request(endpoint, parameters: parameters) else {
-            // TODO: Generate error for this case
             DispatchQueue.main.async {
-                completionHandler(nil, nil)
+                let error = RFError(errorType: RFNetworkingError.entriesFetchingError)
+                completionHandler(error, nil)
             }
+            
             return
         }
         
