@@ -56,10 +56,7 @@ class RedditImageDownloader: NSObject {
                     completion?(false)
                     return
                 }
-                
-                print(image)
-                print(url.absoluteString)
-                
+                                
                 self.imageCache.setObject(image, forKey: url.absoluteString as NSString)
                 
                 if responseUrl == imageView.imageKey && success {
