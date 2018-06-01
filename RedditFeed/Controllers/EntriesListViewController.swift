@@ -34,12 +34,26 @@ class EntriesListViewController: UIViewController {
         loadNewBunchOfEntries(count: initialBunchSize)
     }
     
+    private func showActivityIndicator(_ show: Bool) {
+        if show {
+            let activityIndicator = UIActivityIndicatorView.init(activityIndicatorStyle: .white)
+            let refreshBarButton = UIBarButtonItem(customView: activityIndicator)
+            navigationItem.rightBarButtonItem = refreshBarButton
+            activityIndicator.startAnimating()        
+        }
+        else {
+            navigationItem.rightBarButtonItem = nil
+        }
+    }
+    
     private func loadNewBunchOfEntries(count: Int) {
         if entries.count < maxCapacity {
             let lastEntryName = entries.last?.name
             isLoadingInProgress = true
+            showActivityIndicator(true)
             RedditEntriesFetcher.fetchEntries(entries.count, limit: count, after: lastEntryName, completionHandler: { [unowned self] (error, newEntries) in
                 self.isLoadingInProgress = false
+                self.showActivityIndicator(false)
                 
                 guard error == nil else {
                     let errorAlertController = UIAlertController(title: "Error", message: error?.localizedDescription, preferredStyle: .alert)
