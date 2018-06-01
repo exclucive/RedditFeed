@@ -34,7 +34,7 @@
         <!--Entries-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController storyboardIdentifier="EntriesListViewController" id="BYZ-38-t0r" customClass="EntriesListViewController" customModule="RedditFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="EntriesListViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="BYZ-38-t0r" customClass="EntriesListViewController" customModule="RedditFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -156,7 +156,7 @@
         <!--Full image-->
         <scene sceneID="WaF-Lc-bZg">
             <objects>
-                <viewController storyboardIdentifier="FullEntryImageViewController" id="RYd-0j-nqK" customClass="FullEntryImageViewController" customModule="RedditFeed" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="FullEntryImageViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="RYd-0j-nqK" customClass="FullEntryImageViewController" customModule="RedditFeed" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="aq5-Eg-BmZ">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

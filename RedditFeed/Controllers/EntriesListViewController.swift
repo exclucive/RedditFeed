@@ -78,7 +78,7 @@ class EntriesListViewController: UIViewController {
     }
 }
 
-extension EntriesListViewController: UITableViewDataSource {
+extension EntriesListViewController: UITableViewDataSource, UITableViewDelegate {
     private func configure(_ cell: RedditEntryTableViewCell, indexPath: IndexPath) {
         let entry = entries[indexPath.row]
         
@@ -108,6 +108,10 @@ extension EntriesListViewController: UITableViewDataSource {
         
         configure(cell, indexPath: indexPath)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 
