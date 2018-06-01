@@ -9,6 +9,8 @@
 import UIKit
 
 class FullEntryImageViewController: UIViewController {
+    private let kRestorationImageKey = "restorationImageKey"
+    
     @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var saveButton: UIBarButtonItem!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -66,5 +68,20 @@ class FullEntryImageViewController: UIViewController {
             ac.addAction(UIAlertAction(title: "OK", style: .default))
             present(ac, animated: true)
         }
+    }
+
+    // MARK: preservation/restoration
+    override func encodeRestorableState(with coder: NSCoder) {
+        coder.encode(imageView.image, forKey: kRestorationImageKey)
+        super.encodeRestorableState(with: coder)
+    }
+    
+    override func decodeRestorableState(with coder: NSCoder) {
+        if let image = coder.decodeObject(forKey: kRestorationImageKey) as? UIImage {
+            imageView.image = image
+            saveButton.isEnabled = false
+        }
+        
+        super.decodeRestorableState(with: coder)
     }
 }

@@ -14,18 +14,15 @@ import UIKit
 //- A thumbnail for those who have a picture.
 //- Number of comments
 
-struct RedditEntry {
+class RedditEntry: NSObject, NSCoding, Decodable {
     let name: String
     let title: String
     let author: String
-    let created: TimeInterval
+    let created: Double
     let thumbnailURL: URL?
     let fullImageURL: URL?
     let numberOfComments: Int
-}
 
-// JSON parsing logic
-extension RedditEntry: Decodable {
     enum CodingKeys: String, CodingKey {
         case data
     }
@@ -40,7 +37,7 @@ extension RedditEntry: Decodable {
         case numberOfComments = "num_comments"
     }
     
-    init(from decoder: Decoder) throws {
+    required init(from decoder: Decoder) throws {
         let values = try decoder.container(keyedBy: CodingKeys.self)
         let additionalInfo = try values.nestedContainer(keyedBy: RedditEntryDataKeys.self, forKey: .data)
         
@@ -51,5 +48,26 @@ extension RedditEntry: Decodable {
         thumbnailURL = try additionalInfo.decode(URL.self, forKey: .thumbnailURL)
         fullImageURL = try additionalInfo.decode(URL.self, forKey: .fullImageURL)
         numberOfComments = try additionalInfo.decode(Int.self, forKey: .numberOfComments)
+    }
+    
+    //MARK: NSCoding
+    required init(coder aDecoder: NSCoder) {
+        self.name = aDecoder.decodeObject(forKey: "name") as! String
+        self.title = aDecoder.decodeObject(forKey: "title") as! String
+        self.author = aDecoder.decodeObject(forKey: "author") as! String
+        self.thumbnailURL = aDecoder.decodeObject(forKey: "thumbnailURL") as? URL
+        self.fullImageURL = aDecoder.decodeObject(forKey: "fullImageURL") as? URL
+        self.created = aDecoder.decodeDouble(forKey: "created")
+        self.numberOfComments = aDecoder.decodeInteger(forKey: "numberOfComments")
+    }
+    
+    func encode(with aCoder: NSCoder) {
+        aCoder.encode(name, forKey: "name")
+        aCoder.encode(title, forKey: "title")
+        aCoder.encode(author, forKey: "author")
+        aCoder.encode(thumbnailURL, forKey: "thumbnailURL")
+        aCoder.encode(fullImageURL, forKey: "fullImageURL")
+        aCoder.encode(created, forKey: "created")
+        aCoder.encode(numberOfComments, forKey: "numberOfComments")
     }
 }

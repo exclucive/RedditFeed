@@ -9,13 +9,16 @@
 import UIKit
 
 class EntriesListViewController: UIViewController {
+    private let kTableViewRestorationContentKey = "kTableViewRestodationContentKey"
+    private let kEstimatedRowHeight: CGFloat = 85.0
+    private let kMaxCapacity: Int = 50
+    private let kPageSize: Int = 5
+    
     @IBOutlet weak var tableView: UITableView!
-    let estimatedRowHeight:CGFloat = 85.0
-    let maxCapacity:Int = 50
-    let pageSize:Int = 5
     
     private var entries = [RedditEntry]()
     private var isLoadingInProgress = false
+    private var isControllerRestored = false
     private let imageDownloader = RedditImageDownloader()
     
     override func viewDidLoad() {
@@ -47,7 +50,7 @@ class EntriesListViewController: UIViewController {
     }
     
     private func loadNewBunchOfEntries(count: Int) {
-        if entries.count < maxCapacity {
+        if entries.count < kMaxCapacity {
             let lastEntryName = entries.last?.name
             isLoadingInProgress = true
             showActivityIndicator(true)
@@ -66,15 +69,34 @@ class EntriesListViewController: UIViewController {
                     return
                 }
                 
-                self.entries += newEntries
-                self.tableView.reloadData()
+                if self.isControllerRestored == false {
+                    self.entries += newEntries
+                    self.tableView.reloadData()
+                }
+                self.isControllerRestored = false
             })
         }
     }
     
     private func configrueTableView() {
-        tableView.estimatedRowHeight = estimatedRowHeight
+        tableView.estimatedRowHeight = kEstimatedRowHeight
         tableView.rowHeight = UITableViewAutomaticDimension
+    }
+    
+    // MARK: preservation/restoration
+    override func encodeRestorableState(with coder: NSCoder) {
+        coder.encode(entries, forKey: kTableViewRestorationContentKey)
+        super.encodeRestorableState(with: coder)
+    }
+    
+    override func decodeRestorableState(with coder: NSCoder) {
+        if let restoredEntries = coder.decodeObject(forKey: kTableViewRestorationContentKey) as? [RedditEntry] {
+            self.entries = restoredEntries
+            tableView.reloadData()
+            isControllerRestored = true
+        }
+        
+        super.decodeRestorableState(with: coder)
     }
 }
 
@@ -136,8 +158,8 @@ extension EntriesListViewController: UIScrollViewDelegate {
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         // indentify when user has reached the bottom of the list
         if isLoadingInProgress == false && 
-            scrollView.contentOffset.y + scrollView.frame.height >= scrollView.contentSize.height - estimatedRowHeight {
-            loadNewBunchOfEntries(count: pageSize)
+            scrollView.contentOffset.y + scrollView.frame.height >= scrollView.contentSize.height - kEstimatedRowHeight {
+            loadNewBunchOfEntries(count: kPageSize)
         }
     }
 }
