@@ -32,28 +32,15 @@ class RedditEntriesFetcher: NSObject {
         }
     }
     
-    // MARK: Public methods
-    class func fetchInitialEntries(_ limit: Int, completionHandler: @escaping (Error?, [RedditEntry]?) -> ()) {
-        let initialFetchParams = ["count": "0",
-                                  "limit": "\(limit)"]
-        
-        RedditNetworking.getRequest(fetchEntriesEndpoint, parameters: initialFetchParams) { (error, data) in
-            guard error == nil else {
-                completionHandler(error, nil)
-                return
-            }
-            
-            //
-            parse(data, completionHandler: completionHandler)
+    // MARK: Public methods    
+    class func fetchEntries(_ count: Int, limit: Int, after: String?, completionHandler: @escaping (Error?, [RedditEntry]?) -> ()) {
+        var fetchParameters = ["count": "\(count)",
+                               "limit": "\(limit)"]
+        if let after = after {
+            fetchParameters["after"] = after
         }
-    }
-    
-    class func fetchEntries(_ count: Int, limit: Int, after: String, completionHandler: @escaping (Error?, [RedditEntry]?) -> ()) {
-        let paginationLoadingFetchParams = ["count": "\(count)",
-                                            "limit": "\(limit)",
-                                            "after": after]
         
-        RedditNetworking.getRequest(fetchEntriesEndpoint, parameters: paginationLoadingFetchParams) { (error, data) in
+        RedditNetworking.getRequest(fetchEntriesEndpoint, parameters: fetchParameters) { (error, data) in
             guard error == nil else {
                 completionHandler(error, nil)
                 return

@@ -10,27 +10,18 @@ import UIKit
 
 class EntriesListViewController: UIViewController {
     @IBOutlet weak var tableView: UITableView!
+    let estimatedRowHeight:CGFloat = 85.0
+    let maxCapacity:Int = 50
+    let pageSize:Int = 5 
     
     private var entries = [RedditEntry]()
+    private var isLoadingInProgress = false
     private let imageDownloader = RedditImageDownloader()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         configrueTableView()
-        
-        RedditEntriesFetcher.fetchInitialEntries(10) { [unowned self] (error, entries) in
-            guard error == nil else {
-                // TODO: Show error alert
-                return
-            }
-            
-            guard let entries = entries else {
-                return
-            }
-            
-            self.entries += entries
-            self.tableView.reloadData()
-        }
+        loadInitialEntries()
     }
     
     override func didReceiveMemoryWarning() {
@@ -38,12 +29,42 @@ class EntriesListViewController: UIViewController {
     }
     
     // MARK: Helpers
-    func configrueTableView() {
-        tableView.estimatedRowHeight = 85.0
-        tableView.rowHeight = UITableViewAutomaticDimension
+    private func loadInitialEntries() {
+        let initialBunchSize = 10
+        loadNewBunchOfEntries(count: initialBunchSize)
     }
     
+    private func loadNewBunchOfEntries(count: Int) {
+        if entries.count < maxCapacity {
+            let lastEntryName = entries.last?.name
+            isLoadingInProgress = true
+            RedditEntriesFetcher.fetchEntries(entries.count, limit: count, after: lastEntryName, completionHandler: { [unowned self] (error, newEntries) in
+                self.isLoadingInProgress = false
+                
+                guard error == nil else {
+                    // TODO: Show error alert
+                    return
+                }
+                
+                guard let newEntries = newEntries else {
+                    return
+                }
+                
+                print("new entries: \(newEntries.count)")
+                print("existing entries: \(self.entries.count)")
+                
+                self.entries += newEntries
+                self.tableView.reloadData()
+            })
+        }
+        
+
+    }
     
+    private func configrueTableView() {
+        tableView.estimatedRowHeight = estimatedRowHeight
+        tableView.rowHeight = UITableViewAutomaticDimension
+    }
 }
 
 extension EntriesListViewController: UITableViewDataSource {
@@ -92,6 +113,16 @@ extension EntriesListViewController: RedditEntryTableViewCellDelegate {
         
         if let controller = fullImageController {
             navigationController?.pushViewController(controller, animated: true)
+        }
+    }
+}
+
+extension EntriesListViewController: UIScrollViewDelegate {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        // indentify when user has reached the bottom of the list
+        if isLoadingInProgress == false && 
+            scrollView.contentOffset.y + scrollView.frame.height >= scrollView.contentSize.height - estimatedRowHeight {
+            loadNewBunchOfEntries(count: pageSize)
         }
     }
 }
